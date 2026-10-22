@@ -40,7 +40,6 @@ def test_quote_item_rejects_non_positive_quantity(quantity: Decimal) -> None:
             unit_price=Decimal("45.50"),
         )
 
-
 @pytest.mark.parametrize(
     "unit_price",
     [Decimal("-45.50"), Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")],
