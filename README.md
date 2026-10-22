@@ -47,7 +47,7 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
 ### Windows PowerShell
@@ -57,7 +57,7 @@ cd backend
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
 ## Run the API
@@ -93,6 +93,28 @@ From the `backend/` directory, with the virtual environment activated:
 ```bash
 python -m pytest -v
 ```
+
+## Quality Checks and Dependency Locks
+
+From the repository root, with the backend virtual environment activated:
+
+```bash
+pre-commit run --all-files
+```
+
+The source dependency lists are `backend/requirements.in` and
+`backend/requirements-dev.in`. To regenerate the pinned lock files after
+changing dependencies:
+
+```bash
+cd backend
+python -m pip install pip-tools==7.6.2
+pip-compile --generate-hashes --output-file=requirements.txt requirements.in
+pip-compile --generate-hashes --output-file=requirements-dev.txt requirements-dev.in
+```
+
+Install both lock files for development and tests. The dev lock constrains
+runtime dependency versions but does not duplicate their installation entries.
 
 ## Learning Goals
 

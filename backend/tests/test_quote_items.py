@@ -1,17 +1,16 @@
 from decimal import Decimal
 
 import pytest
-
-from app.domain import (
+from app.domain.model.quote_item import (
     QuoteItem,
     calculate_item_total,
-    calculate_quote_total,
     calculate_tax,
 )
+from app.domain.model.quote_revision import calculate_quote_total
 
 
 @pytest.mark.parametrize("description", ["", "    "])
-def test_quote_item_rejects_empty_description(description: str | None) -> None:
+def test_quote_item_rejects_empty_description(description: str) -> None:
     """Reject missing, empty, or whitespace-only descriptions."""
     with pytest.raises(ValueError, match="description"):
         QuoteItem(
