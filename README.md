@@ -113,8 +113,10 @@ pip-compile --generate-hashes --output-file=requirements.txt requirements.in
 pip-compile --generate-hashes --output-file=requirements-dev.txt requirements-dev.in
 ```
 
-Install both lock files for development and tests. The dev lock constrains
-runtime dependency versions but does not duplicate their installation entries.
+`pip-tools` is only needed to regenerate locks; it is not installed by the
+application or CI. Install both lock files for development and tests. The dev
+lock constrains runtime dependency versions but does not duplicate their
+installation entries.
 
 ## Learning Goals
 
