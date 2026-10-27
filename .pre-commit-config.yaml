@@ -13,9 +13,10 @@ repos:
     hooks:
       # Exécute le linter Ruff et corrige automatiquement ce qui peut l'être (--fix)
       - id: ruff
-        args: [--fix]
+        args: [--config=backend/pyproject.toml, --fix]
       # Exécute le formateur Ruff
       - id: ruff-format
+        args: [--config=backend/pyproject.toml]
 
   # Pyright utilise l'environnement de développement du backend.
   - repo: local

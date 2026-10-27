@@ -3,6 +3,7 @@ from decimal import Decimal
 from uuid import UUID
 
 import pytest
+
 from app.domain.model.quote import Quote
 from app.domain.model.quote_item import QuoteItem
 from app.domain.model.quote_revision import QuoteRevision, calculate_quote_total

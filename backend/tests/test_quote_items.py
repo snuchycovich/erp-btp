@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 import pytest
+
 from app.domain.model.quote_item import (
     QuoteItem,
     calculate_item_total,

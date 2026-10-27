@@ -1,3 +1,9 @@
+[tool.ruff]
+src = ["."]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
 [tool.pyright]
 include = ["app", "tests"]
 typeCheckingMode = "strict"
