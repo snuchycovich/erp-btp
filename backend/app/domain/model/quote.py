@@ -7,6 +7,7 @@ from app.application.validations import (
 )
 from app.domain.model.quote_item import QuoteItem
 from app.domain.model.quote_revision import QuoteRevision, calculate_quote_total
+from app.domain.model.quote_revision_status import QuoteRevisionStatus
 
 
 @dataclass(frozen=True)
@@ -23,13 +24,21 @@ class Quote:
         if not self.revisions:
             raise ValueError("revisions cannot be empty")
 
-    def get_current_revision(self) -> QuoteRevision:
+    @property
+    def current_revision(self) -> QuoteRevision:
         """Return the latest quote revision."""
-        return self.revisions[-1]
+        return max(
+            self.revisions,
+            key=lambda revision: revision.version,
+        )
+
+    @property
+    def status(self) -> QuoteRevisionStatus:
+        return self.current_revision.status
 
     def revise_items(self, new_items: list[QuoteItem]) -> "Quote":
         """Return a new quote with a revision containing the supplied items."""
-        current_revision = self.get_current_revision()
+        current_revision = self.current_revision
         updated_items = list(new_items)
 
         if updated_items == current_revision.items:
@@ -37,6 +46,7 @@ class Quote:
 
         new_revision = QuoteRevision(
             version=current_revision.version + 1,
+            status=current_revision.status,
             items=updated_items,
             total_ht=calculate_quote_total(updated_items),
         )
