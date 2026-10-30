@@ -1,26 +1,15 @@
-"""FastAPI application exposing quote item calculations."""
+"""FastAPI application exposing quote management."""
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
-from app.domain.models.quote_item import QuoteItem, calculate_item_total
-from app.schemas import QuoteItemRequest, QuoteItemResponse
+from app.infrastructure.persistence.database import Base, engine
+from app.presentation.api.routes.quotes import router as quotes_router
 
 app = FastAPI(title="BTP Project Manager")
 
 
-@app.post("/quote-items/calculate")
-def calculate_item(
-    request: QuoteItemRequest,
-) -> QuoteItemResponse:
-    """Calculate and return the pre-tax total for one quote item."""
-    try:
-        item = QuoteItem(
-            description=request.description,
-            quantity=request.quantity,
-            unit_price=request.unit_price,
-        )
-    except ValueError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+# Pour l'exercice uniquement.
+# Les migrations seront ensuite gérées avec Alembic.
+Base.metadata.create_all(bind=engine)
 
-    total = calculate_item_total(item)
-    return QuoteItemResponse(total_ht=total)
+app.include_router(quotes_router)

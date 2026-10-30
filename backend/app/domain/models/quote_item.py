@@ -17,6 +17,7 @@ class QuoteItem:
         description: Non-empty description of the work or product.
         quantity: Number of units; must be strictly positive.
         unit_price: Price per unit; must be non-negative.
+
     """
 
     description: str

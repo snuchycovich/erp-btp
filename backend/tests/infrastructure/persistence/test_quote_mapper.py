@@ -1,3 +1,5 @@
+"""Tests for mappings between quote domain objects and ORM models."""
+
 from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import uuid4
@@ -14,39 +16,11 @@ from app.infrastructure.persistence.models import (
     QuoteModel,
     QuoteRevisionModel,
 )
-
-
-def create_test_quote() -> Quote:
-    created_at = datetime.now(UTC)
-    items = (
-        QuoteItem(
-            description="Tile installation",
-            quantity=Decimal(10),
-            unit_price=Decimal("45.00"),
-        ),
-        QuoteItem(
-            description="Paint work",
-            quantity=Decimal(2),
-            unit_price=Decimal("100.00"),
-        ),
-    )
-    return Quote(
-        id=uuid4(),
-        created_at=created_at,
-        revisions=(
-            QuoteRevision(
-                version=1,
-                status=QuoteRevisionStatus.DRAFT,
-                items=items,
-                total_ht=Decimal("650.00"),
-                created_at=created_at,
-                version_lock=1,
-            ),
-        ),
-    )
+from tests.utils import create_test_quote
 
 
 def test_quote_mapper_to_model() -> None:
+    """Map a complete domain quote to its ORM object graph."""
     created_at = datetime.now(UTC)
     quote_id = uuid4()
     items = (
@@ -102,6 +76,7 @@ def test_quote_mapper_to_model() -> None:
 
 
 def test_quote_mapper_to_domain() -> None:
+    """Map a complete ORM object graph to an immutable domain quote."""
     created_at = datetime.now(UTC)
     quote_id = uuid4()
     model = QuoteModel(
@@ -153,6 +128,7 @@ def test_quote_mapper_to_domain() -> None:
 
 
 def test_quote_mapper_round_trip() -> None:
+    """Preserve a quote through a domain-to-model-to-domain round trip."""
     original = create_test_quote()
 
     model = QuoteMapper.to_model(original)
