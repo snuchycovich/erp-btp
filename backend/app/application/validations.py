@@ -1,3 +1,5 @@
+"""Validation helpers for domain values and business constraints."""
+
 from decimal import Decimal
 
 

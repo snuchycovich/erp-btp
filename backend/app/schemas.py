@@ -1,3 +1,5 @@
+"""Pydantic request and response schemas for the API."""
+
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, field_validator
@@ -13,6 +15,7 @@ class QuoteItemRequest(BaseModel):
     @field_validator("description")
     @classmethod
     def description_must_not_be_blank(cls, value: str) -> str:
+        """Reject descriptions containing only whitespace."""
         if not value.strip():
             raise ValueError("description cannot be empty")
         return value
@@ -20,6 +23,7 @@ class QuoteItemRequest(BaseModel):
     @field_validator("unit_price")
     @classmethod
     def unit_price_must_be_finite_and_non_negative(cls, value: Decimal) -> Decimal:
+        """Reject non-finite or negative unit prices."""
         if not value.is_finite() or value < 0:
             raise ValueError("unit_price must be finite and non-negative")
         return value

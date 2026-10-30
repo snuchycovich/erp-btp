@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI, HTTPException
 
-from app.domain.model.quote_item import QuoteItem, calculate_item_total
+from app.domain.models.quote_item import QuoteItem, calculate_item_total
 from app.schemas import QuoteItemRequest, QuoteItemResponse
 
 app = FastAPI(title="BTP Project Manager")

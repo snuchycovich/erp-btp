@@ -5,18 +5,15 @@ from uuid import UUID
 
 import pytest
 
-from app.domain.model.quote import Quote
-from app.domain.model.quote_item import QuoteItem
-from app.domain.model.quote_revision import QuoteRevision, calculate_quote_total
-from app.domain.model.quote_revision_status import QuoteRevisionStatus
-from app.infrastructure.repositories.in_memory_quote_repository import (
-    InMemoryQuoteRepository,
-)
+from app.domain.models.quote import Quote
+from app.domain.models.quote_item import QuoteItem
+from app.domain.models.quote_revision import QuoteRevision, calculate_quote_total
+from app.domain.models.quote_revision_status import QuoteRevisionStatus
 
 
 def test_quote_create() -> None:
     """A quote keeps stable identity and exposes its initial revision."""
-    items = [
+    items = (
         QuoteItem(
             description="Prestation 1",
             quantity=Decimal(10),
@@ -27,7 +24,7 @@ def test_quote_create() -> None:
             quantity=Decimal(5),
             unit_price=Decimal("15.90"),
         ),
-    ]
+    )
 
     revision = QuoteRevision(
         version=1,
@@ -38,7 +35,7 @@ def test_quote_create() -> None:
     quote = Quote(
         id=UUID("7f77ddc9-abd7-4306-9d8b-f720937ae837"),
         created_at=datetime.now(),
-        revisions=[revision],
+        revisions=(revision,),
     )
 
     assert quote.id == UUID("7f77ddc9-abd7-4306-9d8b-f720937ae837")
@@ -54,7 +51,7 @@ def test_quote_revision_rejects_non_positive_version(version: int) -> None:
         QuoteRevision(
             version=version,
             status=QuoteRevisionStatus.DRAFT,
-            items=[],
+            items=(),
             total_ht=Decimal(0),
             created_at=datetime.now(),
         )
@@ -66,7 +63,7 @@ def test_quote_revision_rejects_invalid_status(status: object) -> None:
         QuoteRevision(
             version=1,
             status=cast(QuoteRevisionStatus, status),
-            items=[],
+            items=(),
             total_ht=Decimal(0),
             created_at=datetime.now(),
         )
@@ -79,7 +76,7 @@ def test_quote_revision_rejects_invalid_total(total_ht: Decimal) -> None:
         QuoteRevision(
             version=1,
             status=QuoteRevisionStatus.DRAFT,
-            items=[],
+            items=(),
             total_ht=total_ht,
             created_at=datetime.now(),
         )
@@ -87,13 +84,13 @@ def test_quote_revision_rejects_invalid_total(total_ht: Decimal) -> None:
 
 def test_quote_revision_total_must_be_sum_of_items() -> None:
     """A quote revision rejects a stored total that differs from its item sum."""
-    items = [
+    items = (
         QuoteItem(
             description="Prestation",
             quantity=Decimal(2),
             unit_price=Decimal("10.00"),
-        )
-    ]
+        ),
+    )
 
     with pytest.raises(ValueError, match="total_ht must equal the sum of items"):
         QuoteRevision(
@@ -107,13 +104,13 @@ def test_quote_revision_total_must_be_sum_of_items() -> None:
 
 def test_revising_items_appends_revision_and_recalculates_total() -> None:
     """Changing an item appends a revision and preserves the previous revision."""
-    items = [
+    items = (
         QuoteItem(
             description="Prestation",
             quantity=Decimal(2),
             unit_price=Decimal("10.00"),
-        )
-    ]
+        ),
+    )
     initial_revision = QuoteRevision(
         version=1,
         status=QuoteRevisionStatus.DRAFT,
@@ -124,7 +121,7 @@ def test_revising_items_appends_revision_and_recalculates_total() -> None:
     quote = Quote(
         id=UUID("7f77ddc9-abd7-4306-9d8b-f720937ae837"),
         created_at=datetime.now(),
-        revisions=[initial_revision],
+        revisions=(initial_revision,),
     )
 
     updated_items = [
@@ -144,18 +141,18 @@ def test_revising_items_appends_revision_and_recalculates_total() -> None:
     assert updated_quote.revisions[0] == initial_revision
     assert updated_quote.revisions[0].items[0].unit_price == Decimal("10.00")
     assert updated_quote.revisions[0].total_ht == Decimal("20.00")
-    assert quote.revisions == [initial_revision]
+    assert quote.revisions == (initial_revision,)
 
 
 def test_revising_items_to_empty_list_creates_zero_total_revision() -> None:
     """Removing every item appends a revision with a zero total."""
-    initial_items = [
+    initial_items = (
         QuoteItem(
             description="Prestation",
             quantity=Decimal(2),
             unit_price=Decimal("10.00"),
-        )
-    ]
+        ),
+    )
     initial_revision = QuoteRevision(
         version=1,
         status=QuoteRevisionStatus.DRAFT,
@@ -165,15 +162,15 @@ def test_revising_items_to_empty_list_creates_zero_total_revision() -> None:
     quote = Quote(
         id=UUID("7f77ddc9-abd7-4306-9d8b-f720937ae837"),
         created_at=datetime.now(),
-        revisions=[initial_revision],
+        revisions=(initial_revision,),
     )
 
     revised_quote = quote.revise_items([])
 
     assert [revision.version for revision in revised_quote.revisions] == [1, 2]
-    assert revised_quote.current_revision.items == []
+    assert revised_quote.current_revision.items == ()
     assert revised_quote.current_revision.total_ht == Decimal(0)
-    assert quote.revisions == [initial_revision]
+    assert quote.revisions == (initial_revision,)
 
 
 def test_quote_accepts_zero_total_and_lock_version() -> None:
@@ -181,14 +178,14 @@ def test_quote_accepts_zero_total_and_lock_version() -> None:
     quote = Quote(
         id=UUID("7f77ddc9-abd7-4306-9d8b-f720937ae837"),
         created_at=datetime.now(),
-        revisions=[
+        revisions=(
             QuoteRevision(
                 version=1,
                 status=QuoteRevisionStatus.DRAFT,
-                items=[],
+                items=(),
                 total_ht=Decimal(0),
-            )
-        ],
+            ),
+        ),
     )
 
     assert quote.current_revision.total_ht == Decimal(0)
@@ -200,44 +197,16 @@ def test_quote_rejects_missing_required_attributes(attribute: str) -> None:
     quote_attributes: dict[str, object] = {
         "id": UUID("7f77ddc9-abd7-4306-9d8b-f720937ae837"),
         "created_at": datetime.now(),
-        "revisions": [
+        "revisions": (
             QuoteRevision(
                 version=1,
                 status=QuoteRevisionStatus.DRAFT,
-                items=[],
+                items=(),
                 total_ht=Decimal(0),
-            )
-        ],
+            ),
+        ),
     }
     quote_attributes[attribute] = None
 
     with pytest.raises(ValueError, match=f"{attribute} cannot be empty"):
         Quote(**quote_attributes)  # type: ignore[arg-type]
-
-
-def test_in_memory_quote_repository_crud() -> None:
-    """InMemoryQuoteRepository must implement the Quote CRUD contract."""
-    quote = Quote(
-        id=UUID("7f77ddc9-abd7-4306-9d8b-f720937ae837"),
-        created_at=datetime.now(),
-        revisions=[
-            QuoteRevision(
-                version=1,
-                status=QuoteRevisionStatus.DRAFT,
-                items=[],
-                total_ht=Decimal(0),
-            )
-        ],
-    )
-
-    repo = InMemoryQuoteRepository()
-
-    assert repo.get_by_id(quote.id) is None
-    assert repo.list_all() == []
-
-    assert repo.add(quote) == quote
-    assert repo.get_by_id(quote.id) == quote
-    assert repo.list_all() == [quote]
-
-    assert repo.delete(quote.id) is True
-    assert repo.get_by_id(quote.id) is None

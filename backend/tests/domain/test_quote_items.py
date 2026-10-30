@@ -2,12 +2,12 @@ from decimal import Decimal
 
 import pytest
 
-from app.domain.model.quote_item import (
+from app.domain.models.quote_item import (
     QuoteItem,
     calculate_item_total,
     calculate_tax,
 )
-from app.domain.model.quote_revision import calculate_quote_total
+from app.domain.models.quote_revision import calculate_quote_total
 
 
 @pytest.mark.parametrize("description", ["", "    "])

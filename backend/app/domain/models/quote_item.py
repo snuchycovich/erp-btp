@@ -1,3 +1,5 @@
+"""Domain value object and calculations for quote line items."""
+
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 

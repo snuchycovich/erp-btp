@@ -1,3 +1,5 @@
+"""Lifecycle statuses available to a quote revision."""
+
 from enum import StrEnum
 
 
