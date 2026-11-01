@@ -1,3 +1,5 @@
+"""Tests for the in-memory quote repository implementation."""
+
 from datetime import datetime
 from decimal import Decimal
 from uuid import UUID

@@ -1,3 +1,5 @@
+"""Tests for quote item validation and financial calculations."""
+
 from decimal import Decimal
 
 import pytest

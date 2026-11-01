@@ -14,6 +14,8 @@ from app.domain.models.quote_revision_status import QuoteRevisionStatus
 
 @dataclass(frozen=True)
 class Quote:
+    """Represent a quote with a stable identity and immutable revision history."""
+
     id: UUID
     revisions: tuple[QuoteRevision, ...]
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))

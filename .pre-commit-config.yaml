@@ -18,7 +18,7 @@ repos:
       - id: ruff-format
         args: [--config=backend/pyproject.toml]
 
-  # Pyright utilise l'environnement de développement du backend.
+  # Vérifications locales pour le backend (Pyright) et le frontend (Oxlint).
   - repo: local
     hooks:
       - id: pyright
@@ -26,4 +26,11 @@ repos:
         entry: backend/.venv/bin/pyright --project backend/pyproject.toml
         language: system
         types: [python]
+        pass_filenames: false
+
+      - id: frontend-lint
+        name: frontend lint (oxlint)
+        entry: npm --prefix frontend run lint
+        language: system
+        files: ^frontend/.*\.(js|jsx|ts|tsx)$
         pass_filenames: false

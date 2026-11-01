@@ -1,3 +1,5 @@
+"""Tests for the quote aggregate and its revision history."""
+
 from datetime import datetime
 from decimal import Decimal
 from typing import cast
@@ -59,6 +61,7 @@ def test_quote_revision_rejects_non_positive_version(version: int) -> None:
 
 @pytest.mark.parametrize("status", [None, "invalid"])
 def test_quote_revision_rejects_invalid_status(status: object) -> None:
+    """Reject statuses that are not members of the revision status enum."""
     with pytest.raises(TypeError, match="status must be a QuoteRevisionStatus"):
         QuoteRevision(
             version=1,

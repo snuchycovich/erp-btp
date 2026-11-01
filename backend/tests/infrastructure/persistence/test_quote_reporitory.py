@@ -1,3 +1,5 @@
+"""Integration tests for persistence of quote ORM models."""
+
 from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import uuid4
@@ -15,6 +17,7 @@ from app.infrastructure.persistence.models import (
 
 
 def test_save_quote_with_revision_and_items() -> None:
+    """Persist and reload a quote with its revision and line items."""
     # Arrange: isolated in-memory database
     engine = create_engine(
         "sqlite://",
