@@ -1,56 +1,73 @@
+import { apiClient } from "./client";
+
 import type {
     CreateQuoteRequest,
     CreateQuoteResponse,
     QuoteDetailResponse,
     QuoteSummary,
 } from "../features/quotes/types";
+import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+function getHttpStatus(error: unknown) : number | undefined {
+    return axios.isAxiosError(error) ? error.response?.status : undefined
+}
 
 export async function listQuotes(): Promise<QuoteSummary[]> {
-    const response = await fetch(`${API_URL}/quotes`);
-
-    if (!response.ok) {
-        throw new Error(`Unable to load quotes (HTTP ${response.status})`);
+    try {
+        const response = await apiClient.get<QuoteSummary[]>("/quotes");
+        return response.data
+    } catch (error) {
+        const status = getHttpStatus(error);
+        throw new Error(
+            status
+                ? `Unable to load quotes (HTTP ${status})`
+                : "Unabled to load quote"
+        )
     }
-
-    return (await response.json()) as QuoteSummary[];
 }
 
 export async function getQuoteById(
     quoteId: string,
 ): Promise<QuoteDetailResponse> {
-    const response = await fetch(
-        `${API_URL}/quotes/${encodeURIComponent(quoteId)}`,
-    );
+    try {
+        const response = await apiClient.get<QuoteDetailResponse>(
+            `/quotes/${encodeURIComponent(quoteId)}`
+        );
+        return response.data;
+    } catch (error) {
+        const status = getHttpStatus(error);
 
-    if (!response.ok) {
-        throw new Error (
-            response.status === 404
-            ? "This quote doesn't exist."
-            : `Uneble to load quote (HTTP ${response.status})`,
-        )
+        if (status === 404) {
+            throw new Error("This quote doesn't exist.");
+        }
+
+        throw new Error(
+            status
+                ? `Unable to load quote (HTTP ${status})`
+                : "Unable to load quote",
+        );
     }
-
-    return (await response.json()) as QuoteDetailResponse;
 }
 
 export async function createQuote(
     payload: CreateQuoteRequest,
 ): Promise<CreateQuoteResponse> {
-    const response = await fetch(`${API_URL}/quotes`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-    });
+    try {
+        const response = await apiClient.post<CreateQuoteResponse>(
+            "/quotes",
+            payload,
+        );
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error("API error:", error.response?.data);
+        }
 
-    if (!response.ok) {
-        const body: unknown = await response.json().catch(() => null);
-        console.error("API error:", body);
-        throw new Error(`Quote creation failed (HTTP ${response.status})`);
+        const status = getHttpStatus(error);
+        throw new Error(
+            status
+                ? `Quote creation failed (HTTP ${status})`
+                : "Quote creation failed",
+        );
     }
-
-    return (await response.json()) as CreateQuoteResponse
 }
