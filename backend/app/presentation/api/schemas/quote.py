@@ -46,3 +46,11 @@ class QuoteCreateResponse(BaseModel):
     revision: int
     status: str
     total_ht: Decimal
+
+
+class QuoteListResponse(BaseModel):
+    """Summary returned list quotes"""
+
+    id: UUID
+    status: str
+    total_ht: Decimal

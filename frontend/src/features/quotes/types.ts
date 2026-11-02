@@ -14,3 +14,9 @@ export type CreateQuoteResponse = {
     status: string;
     total_ht: string;
 }
+
+export type QuoteSummary = {
+    id: string;
+    status: string;
+    total_ht: string;
+}

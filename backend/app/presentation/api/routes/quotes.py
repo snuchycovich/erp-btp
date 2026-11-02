@@ -5,18 +5,47 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.application.use_cases.create_quote import CreateQuoteUseCase
+from app.application.use_cases import (
+    CreateQuoteUseCase,
+    ListQuotesUseCase,
+)
 from app.domain.models.quote_item import QuoteItem
 from app.presentation.api.dependencies import (
     get_create_quote_use_case,
+    get_list_quotes_use_case,
     get_session,
 )
 from app.presentation.api.schemas.quote import (
     QuoteCreateRequest,
     QuoteCreateResponse,
+    QuoteListResponse,
 )
 
 router = APIRouter(prefix="/quotes", tags=["Quotes"])
+
+
+@router.get(
+    "",
+    response_model=list[QuoteListResponse],
+    status_code=200,
+)
+def list_quotes(
+    use_case: Annotated[
+        ListQuotesUseCase,
+        Depends(get_list_quotes_use_case),
+    ],
+    session: Annotated[Session, Depends(get_session)],
+) -> list[QuoteListResponse]:
+    quotes = use_case.execute()
+
+    return [
+        QuoteListResponse(
+            id=quote.id,
+            status=quote.status.value,
+            total_ht=quote.current_revision.total_ht,
+        )
+        for quote in quotes
+    ]
 
 
 @router.post(

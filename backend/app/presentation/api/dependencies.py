@@ -6,7 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from app.application.use_cases.create_quote import CreateQuoteUseCase
+from app.application.use_cases import CreateQuoteUseCase, ListQuotesUseCase
 from app.infrastructure.persistence.database import SessionLocal
 from app.infrastructure.persistence.repositories.sqlalchemy_quote_repository import (
     SQLAlchemyQuoteRepository,
@@ -28,3 +28,11 @@ def get_create_quote_use_case(
     """Build the quote creation use case with a SQLAlchemy repository."""
     repository = SQLAlchemyQuoteRepository(session)
     return CreateQuoteUseCase(repository)
+
+
+def get_list_quotes_use_case(
+    session: DbSession,
+) -> ListQuotesUseCase:
+    """Build the quote fetch use case with SQLAlchemy repository."""
+    repository = SQLAlchemyQuoteRepository(session)
+    return ListQuotesUseCase(repository)

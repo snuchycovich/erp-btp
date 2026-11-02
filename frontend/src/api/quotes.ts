@@ -1,9 +1,20 @@
 import type {
     CreateQuoteRequest,
-    CreateQuoteResponse
+    CreateQuoteResponse,
+    QuoteSummary,
 } from "../features/quotes/types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+
+export async function listQuotes(): Promise<QuoteSummary[]> {
+    const response = await fetch(`${API_URL}/quotes`);
+
+    if (!response.ok) {
+        throw new Error(`Unable to load quotes (HTTP ${response.status})`);
+    }
+
+    return (await response.json()) as QuoteSummary[];
+}
 
 export async function createQuote(
     payload: CreateQuoteRequest,
