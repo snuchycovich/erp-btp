@@ -6,7 +6,12 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from app.application.use_cases import CreateQuoteUseCase, ListQuotesUseCase
+from app.application.use_cases import (
+    CreateQuoteUseCase,
+    GetQuoteByIdUseCase,
+    ListQuotesUseCase,
+)
+from app.domain.repository.quote_repository import QuoteRepository
 from app.infrastructure.persistence.database import SessionLocal
 from app.infrastructure.persistence.repositories.sqlalchemy_quote_repository import (
     SQLAlchemyQuoteRepository,
@@ -22,17 +27,33 @@ def get_session() -> Generator[Session, None, None]:
 DbSession = Annotated[Session, Depends(get_session)]
 
 
+def get_quote_repository(session: DbSession) -> QuoteRepository:
+    """Build the quote repository for the current request."""
+    return SQLAlchemyQuoteRepository(session)
+
+
+QuoteRepositoryDep = Annotated[
+    QuoteRepository,
+    Depends(get_quote_repository),
+]
+
+
 def get_create_quote_use_case(
-    session: DbSession,
+    repository: QuoteRepositoryDep,
 ) -> CreateQuoteUseCase:
-    """Build the quote creation use case with a SQLAlchemy repository."""
-    repository = SQLAlchemyQuoteRepository(session)
+    """Build the quote creation use case."""
     return CreateQuoteUseCase(repository)
 
 
 def get_list_quotes_use_case(
-    session: DbSession,
+    repository: QuoteRepositoryDep,
 ) -> ListQuotesUseCase:
-    """Build the quote fetch use case with SQLAlchemy repository."""
-    repository = SQLAlchemyQuoteRepository(session)
+    """Build the quote listing use case."""
     return ListQuotesUseCase(repository)
+
+
+def get_quote_detail_use_case(
+    repository: QuoteRepositoryDep,
+) -> GetQuoteByIdUseCase:
+    """Build the quote detail use case."""
+    return GetQuoteByIdUseCase(repository)

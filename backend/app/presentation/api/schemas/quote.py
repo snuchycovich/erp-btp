@@ -1,10 +1,12 @@
 """Pydantic request and response schemas for the API."""
 
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.domain.models import QuoteRevisionStatus
 from app.presentation.api.text_normalization import normalize_plain_text
 
 
@@ -54,3 +56,29 @@ class QuoteListResponse(BaseModel):
     id: UUID
     status: str
     total_ht: Decimal
+
+
+class QuoteItemResponse(BaseModel):
+    """One line item in a quote revision."""
+
+    description: str
+    quantity: Decimal
+    unit_price: Decimal
+
+
+class QuoteRevisionResponse(BaseModel):
+    """A quote revision and its line items."""
+
+    version: int
+    status: QuoteRevisionStatus
+    total_ht: Decimal
+    created_at: datetime
+    items: list[QuoteItemResponse]
+
+
+class QuoteDetailResponse(BaseModel):
+    """Full quote details, including its revision history."""
+
+    id: UUID
+    created_at: datetime
+    revisions: list[QuoteRevisionResponse]

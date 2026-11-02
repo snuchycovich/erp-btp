@@ -20,3 +20,23 @@ export type QuoteSummary = {
     status: string;
     total_ht: string;
 }
+
+export type QuoteItemDetail = {
+    description: string,
+    quantity: string,
+    unit_price: string,
+}
+
+export type QuoteRevisionDetail = {
+    version: number;
+    status: string;
+    total_ht: string;
+    created_at: string;
+    items: QuoteItemDetail[];
+};
+
+export type QuoteDetailResponse = {
+    id: string;
+    created_at: string;
+    revisions: QuoteRevisionDetail[];
+};

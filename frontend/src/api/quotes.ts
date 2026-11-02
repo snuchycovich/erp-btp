@@ -1,6 +1,7 @@
 import type {
     CreateQuoteRequest,
     CreateQuoteResponse,
+    QuoteDetailResponse,
     QuoteSummary,
 } from "../features/quotes/types";
 
@@ -14,6 +15,24 @@ export async function listQuotes(): Promise<QuoteSummary[]> {
     }
 
     return (await response.json()) as QuoteSummary[];
+}
+
+export async function getQuoteById(
+    quoteId: string,
+): Promise<QuoteDetailResponse> {
+    const response = await fetch(
+        `${API_URL}/quotes/${encodeURIComponent(quoteId)}`,
+    );
+
+    if (!response.ok) {
+        throw new Error (
+            response.status === 404
+            ? "This quote doesn't exist."
+            : `Uneble to load quote (HTTP ${response.status})`,
+        )
+    }
+
+    return (await response.json()) as QuoteDetailResponse;
 }
 
 export async function createQuote(

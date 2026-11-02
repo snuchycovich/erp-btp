@@ -1,5 +1,6 @@
 import { useState } from "react"
 import type { SubmitEvent } from "react"
+import { useNavigate } from "react-router-dom"
 
 import { createQuote } from "../../api/quotes"
 
@@ -20,6 +21,7 @@ export function QuoteForm() {
     const [error, setError] = useState<string | null>(null);
     const [createdId, setCreatedId] = useState<string | null>(null);
 
+    const navigate = useNavigate();
 
     function updateItem(
         index: number,
@@ -45,6 +47,7 @@ export function QuoteForm() {
         try {
             const quote = await createQuote({ items });
             setCreatedId(quote.id);
+            void navigate(`/quotes/${encodeURIComponent(quote.id)}`);
         } catch (error: unknown) {
             setError(
                 error instanceof Error
