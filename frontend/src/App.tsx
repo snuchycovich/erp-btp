@@ -21,6 +21,16 @@ function QuoteDetailRoute() {
 
 }
 
+function EditQuoteRoute() {
+    const { quoteId } = useParams<{ quoteId: string }>();
+
+    if (!quoteId) {
+        return <Navigate to="/quotes" replace />;
+    }
+
+    return <QuoteForm quoteId={quoteId} />;
+}
+
 function NotFound() {
     return (
         <main>
@@ -37,6 +47,7 @@ export default function App() {
                 <Route path="/" element={<Navigate to="/quotes" replace/>}/>
                 <Route path="/quotes" element={<QuotesList />}/>
                 <Route path="/quotes/new" element={<QuoteForm />}/>
+                <Route path="/quotes/:quoteId/edit" element={<EditQuoteRoute />}/>
                 <Route
                     path="/quotes/:quoteId"
                     element={<QuoteDetailRoute/>}/>

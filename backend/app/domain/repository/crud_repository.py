@@ -21,6 +21,10 @@ class CrudRepository(Protocol, Generic[T, ID_contra]):
         """Persist or store an entity and return it."""
         ...
 
+    def update(self, entity: T) -> T | None:
+        """Persist changes to an existing entity, or return None if absent."""
+        ...
+
     def delete(self, entity_id: ID_contra) -> bool:
         """Delete the entity with the given ID and report whether it existed."""
         ...

@@ -10,6 +10,7 @@ from app.application.use_cases import (
     CreateQuoteUseCase,
     GetQuoteByIdUseCase,
     ListQuotesUseCase,
+    UpdateQuoteUseCase,
 )
 from app.domain.repository.quote_repository import QuoteRepository
 from app.infrastructure.persistence.database import SessionLocal
@@ -57,3 +58,10 @@ def get_quote_detail_use_case(
 ) -> GetQuoteByIdUseCase:
     """Build the quote detail use case."""
     return GetQuoteByIdUseCase(repository)
+
+
+def get_update_quote_use_case(
+    repository: QuoteRepositoryDep,
+) -> UpdateQuoteUseCase:
+    """Build the quote update use case."""
+    return UpdateQuoteUseCase(repository)

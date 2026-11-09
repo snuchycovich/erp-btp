@@ -8,12 +8,18 @@ export type CreateQuoteRequest = {
     items: QuoteItemInput[];
 }
 
+export type UpdateQuoteRequest = {
+    items: QuoteItemInput[];
+}
+
 export type CreateQuoteResponse = {
     id: string;
     revision: number;
     status: string;
     total_ht: string;
 }
+
+export type UpdateQuoteResponse = CreateQuoteResponse;
 
 export type QuoteSummary = {
     id: string;

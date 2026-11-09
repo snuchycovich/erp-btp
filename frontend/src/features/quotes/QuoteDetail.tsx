@@ -73,6 +73,11 @@ export function QuoteDetail({ quoteId }: QuoteDetailProps) {
 
             {quote && (
                 <>
+                    <p>
+                        <Link to={`/quotes/${encodeURIComponent(quote.id)}/edit`}>
+                            Modifier le devis
+                        </Link>
+                    </p>
                     <dl>
                         <dt>Identifiant</dt>
                         <dd>

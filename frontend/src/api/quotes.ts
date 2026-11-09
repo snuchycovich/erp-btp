@@ -5,6 +5,8 @@ import type {
     CreateQuoteResponse,
     QuoteDetailResponse,
     QuoteSummary,
+    UpdateQuoteRequest,
+    UpdateQuoteResponse,
 } from "../features/quotes/types";
 import axios from "axios";
 
@@ -68,6 +70,34 @@ export async function createQuote(
             status
                 ? `Quote creation failed (HTTP ${status})`
                 : "Quote creation failed",
+        );
+    }
+}
+
+export async function updateQuote(
+    quoteId: string,
+    payload: UpdateQuoteRequest,
+): Promise<UpdateQuoteResponse> {
+    try {
+        const response = await apiClient.patch<UpdateQuoteResponse>(
+            `/quotes/${encodeURIComponent(quoteId)}`,
+            payload,
+        );
+        return response.data;
+    } catch (error) {
+        const status = getHttpStatus(error);
+
+        if (status === 404) {
+            throw new Error("Ce devis n'existe plus.");
+        }
+        if (status === 409) {
+            throw new Error("Le devis a été modifié ailleurs. Rechargez-le avant de réessayer.");
+        }
+
+        throw new Error(
+            status
+                ? `La mise à jour du devis a échoué (HTTP ${status})`
+                : "La mise à jour du devis a échoué",
         );
     }
 }

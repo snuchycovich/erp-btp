@@ -82,3 +82,18 @@ class QuoteDetailResponse(BaseModel):
     id: UUID
     created_at: datetime
     revisions: list[QuoteRevisionResponse]
+
+
+class QuoteUpdateRequest(BaseModel):
+    """Replacement items for a quote revision."""
+
+    items: list[QuoteItemRequest] = Field(min_length=1)
+
+
+class QuoteUpdateResponse(BaseModel):
+    """Summary returned after a quote is updated."""
+
+    id: UUID
+    revision: int
+    status: str
+    total_ht: Decimal

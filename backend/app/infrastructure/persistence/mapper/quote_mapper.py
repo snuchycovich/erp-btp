@@ -76,3 +76,21 @@ class QuoteMapper:
                 for revision in model.revisions
             ),
         )
+
+    @staticmethod
+    def revision_to_model(revision: QuoteRevision) -> QuoteRevisionModel:
+        return QuoteRevisionModel(
+            version=revision.version,
+            status=revision.status,
+            total_ht=revision.total_ht,
+            created_at=QuoteMapper._to_utc_datetime(revision.created_at),
+            version_lock=revision.version_lock,
+            items=[
+                QuoteItemModel(
+                    description=item.description,
+                    quantity=item.quantity,
+                    unit_price=item.unit_price,
+                )
+                for item in revision.items
+            ],
+        )

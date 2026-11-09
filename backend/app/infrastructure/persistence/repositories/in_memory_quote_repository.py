@@ -26,6 +26,14 @@ class InMemoryQuoteRepository(QuoteRepository):
         self._quotes[entity.id] = entity
         return entity
 
+    def update(self, entity: Quote) -> Quote | None:
+        """Replace a stored quote, or return None if its ID is not stored."""
+        if entity.id not in self._quotes:
+            return None
+
+        self._quotes[entity.id] = entity
+        return entity
+
     def delete(self, entity_id: UUID) -> bool:
         """Delete the quote if present and report whether it was removed."""
         if entity_id in self._quotes:

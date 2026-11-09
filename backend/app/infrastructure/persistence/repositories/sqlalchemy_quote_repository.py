@@ -56,6 +56,17 @@ class SQLAlchemyQuoteRepository(QuoteRepository):
 
         return [QuoteMapper.to_domain(model) for model in models]
 
+    def update(self, entity: Quote) -> Quote | None:
+        """Append the latest revision and flush, or return None if absent."""
+        model = self._session.get(QuoteModel, entity.id)
+        if model is None:
+            return None
+
+        model.revisions.append(QuoteMapper.revision_to_model(entity.current_revision))
+        self._session.flush()
+
+        return entity
+
     def delete(self, entity_id: UUID) -> bool:
         """Schedule the matching quote for deletion in the session."""
         model = self._session.get(QuoteModel, entity_id)
